@@ -26,3 +26,5 @@ doc/_build
 dconf
 
 .idea/
+# Ignore Jupyter notebook files. Use the jupytext-paired .md files instead
+*.ipynb
