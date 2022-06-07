@@ -1,3 +1,24 @@
+# Zoltán's Customisations
+## End Goal
+* Show how adding renewable generation in the right places in the network can reduce the need for network expansion
+  * Compare optimisation outcome of generation-only expansion vs.
+    transmission-only expansion, and everything in between
+
+## Short-term tasks
+* [ ] How are already installed renewables presented?
+
+## Findings
+* `solve_operations_network.py` says it _"Solves linear optimal dispatch in **hourly** resolution using the capacities
+  of previous capacity expansion in rule :mod:`solve_network`."_
+* From [`pypsa` Optimal Power Flow
+  documentation](https://pypsa.readthedocs.io/en/latest/optimal_power_flow.html#linear-optimal-power-flow):
+  _The linear OPF module can optimise the **dispatch of generation** and storage and the **capacities of generation,
+  storage and transmission** infrastructure._
+* `lopf` is used if (transmission) lines are not to be extended. `ilopf` is used with iterative transmission line
+  expansion.
+
+---
+
 <!--
 SPDX-FileCopyrightText: 2017-2022 The PyPSA-Eur Authors
 SPDX-License-Identifier: CC-BY-4.0
