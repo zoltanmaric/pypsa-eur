@@ -42,7 +42,7 @@ electricity:
   co2limit: 100.e+6
 
   extendable_carriers:
-    Generator: [OCGT]
+    Generator: []
     StorageUnit: [] #battery, H2
     Store: [battery, H2]
     Link: []
@@ -53,8 +53,8 @@ electricity:
 
   powerplants_filter: false # use pandas query strings here, e.g. Country not in ['Germany']
   custom_powerplants: false # use pandas query strings here, e.g. Country in ['Germany']
-  conventional_carriers: [coal, CCGT] # [nuclear, oil, OCGT, CCGT, coal, lignite, geothermal, biomass]
-  renewable_capacities_from_OPSD: [onwind, offwind, solar] # onwind, offwind, solar
+  conventional_carriers: [nuclear, oil, OCGT, CCGT, coal, lignite, geothermal, biomass]
+  renewable_capacities_from_OPSD: [onwind, offwind, solar]
 
 atlite:
   nprocesses: 4
@@ -187,7 +187,7 @@ solving:
 plotting:
   map:
     figsize: [7, 7]
-    boundaries: [-10.2, 29, 35,  72]
+    boundaries: [5.5, 15.5, 47, 55] # Germany only
     p_nom:
       bus_size_factor: 5.e+4
       linewidth_factor: 3.e+3

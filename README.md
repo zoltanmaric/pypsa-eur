@@ -5,7 +5,13 @@
     transmission-only expansion, and everything in between
 
 ## Short-term tasks
-* [ ] How are already installed renewables presented?
+* [ ] Try interactive mapping from `pypsa`
+* [ ] Run pipeline on most recent data available
+* [ ] Plot dispatch-only optimisation
+  * [ ] Show amount of curtailment
+* [ ] `config.default.yaml` defines `agg_p_nom_limits: data/agg_p_nom_minmax.csv`
+* [x] How are already installed renewables presented?
+  * They weren't, but I added them by listing wind and solar in `renewable_capacities_from_OPSD`
 
 ## Findings
 * `solve_operations_network.py` says it _"Solves linear optimal dispatch in **hourly** resolution using the capacities
@@ -16,6 +22,15 @@
   storage and transmission** infrastructure._
 * `lopf` is used if (transmission) lines are not to be extended. `ilopf` is used with iterative transmission line
   expansion.
+* The rule `solve_all_networks` runs the rule `solve_network` for all `scenario`s in the configuration file.
+* Defining the same carrier type in both `extendable_carriers/Generator` and `conventional_carrers` results in errors
+  like
+  ```python
+  AssertionError: In Generator cluster p_nom_extendable the values of attribute p_nom_extendable do not agree:
+  Generator
+  C3113     False
+  2 OCGT     True
+  ```
 
 ---
 
