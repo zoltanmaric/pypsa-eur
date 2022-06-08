@@ -31,6 +31,8 @@
   C3113     False
   2 OCGT     True
   ```
+* [Paper](https://www.sciencedirect.com/science/article/pii/S0306261921002439) by Tom Brown's gang from June 2021
+  shows how to cluster smart
 
 ---
 
