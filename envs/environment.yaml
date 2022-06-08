@@ -59,6 +59,7 @@ dependencies:
   - ipykernel
   - jupyterlab
   - jupytext  # a plugin for making raw Jupyter notebooks human-readable and diffable
+  - plotly
 
   # help for visualising Snakemake DAGs
   - graphviz

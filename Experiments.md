@@ -34,14 +34,21 @@ ax.axis('off')
 ```
 
 ```python
+import plotly.graph_objects as go
+
+n.iplot()
+"bro"
+```
+
+```python
 import pandas as pd
 pd.options.display.max_columns = None # show all columns of a dataframe
 pd.options.display.max_rows = None # show all rows of a dataframe
 
-n.generators.query('carrier == "solar"')
+n.generators.query('carrier == "solar"').head()
 ```
 
 ```python
-display(n.generators.query('p_nom_extendable == True and carrier not in ["onwind", "offwind", "offwind-ac", "offwind-dc", "solar"]'))
+display(n.generators.query('p_nom_extendable == True and carrier not in ["onwind", "offwind", "offwind-ac", "offwind-dc", "solar"]').head())
 n.buses.loc[['4931']]
 ```
