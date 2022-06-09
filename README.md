@@ -5,11 +5,17 @@
     transmission-only expansion, and everything in between
 
 ## Short-term tasks
-* [ ] Try interactive mapping from `pypsa`
+* [ ] Map configuration [link](https://plotly.com/python/map-configuration/)
+* [ ] Pretty map example ([link](https://plotly.com/python/scattermapbox/))
+  ![](Pretty map.png)
+* [ ] Use `datashader` for dense data on a map
+  ([example](https://medium.com/plotly/building-a-big-data-geographical-dashboard-with-open-source-tools-c5108d7d5683))
 * [ ] Run pipeline on most recent data available
+* [ ] How is the time duration and snapshots related to the optimisation target?
 * [ ] Plot dispatch-only optimisation
   * [ ] Show amount of curtailment
 * [ ] `config.default.yaml` defines `agg_p_nom_limits: data/agg_p_nom_minmax.csv`
+* [x] Try interactive mapping from `pypsa`
 * [x] How are already installed renewables presented?
   * They weren't, but I added them by listing wind and solar in `renewable_capacities_from_OPSD`
 
