@@ -10,6 +10,7 @@ dependencies:
   - python>=3.8
   - pip
 
+  - pypsa>=0.20
   - atlite>=0.2.6
   - dask
 
@@ -33,6 +34,7 @@ dependencies:
   - scipy
   - shapely
   - progressbar2
+  - pyomo
   - matplotlib
   - proj
   - fiona <= 1.18.20  # Till issue https://github.com/Toblerity/Fiona/issues/1085 is not solved
@@ -63,8 +65,5 @@ dependencies:
   - graphviz
 
   - pip:
-    - pypsa>=0.20.0
     - vresutils>=0.3.1
     - tsam>=1.1.0
-    - tabula-py
-    - pyomo
