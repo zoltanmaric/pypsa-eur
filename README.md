@@ -20,6 +20,10 @@
   * They weren't, but I added them by listing wind and solar in `renewable_capacities_from_OPSD`
 
 ## Findings
+* As of 2022-06-27, the most recent available load data on `open-power-system-data` is from 2020-09-30, even though the
+snapshot is from 2020-10-06.
+  * In the CSV, the relevant column says `DE_load_actual_entsoe_transparency`, so there may be fresher data available on
+    the ENTSO-E transparency page
 * `solve_operations_network.py` says it _"Solves linear optimal dispatch in **hourly** resolution using the capacities
   of previous capacity expansion in rule :mod:`solve_network`."_
 * From [`pypsa` Optimal Power Flow
