@@ -28,7 +28,7 @@ fig,ax = plt.subplots(
     subplot_kw={"projection": ccrs.PlateCarree()}
 )
 
-n.plot(ax=ax, boundaries=(5.5, 15.5, 47, 55))
+n.plot(ax=ax, boundaries=(-9, 28, 30, 75))
 
 ax.axis('off')
 ```

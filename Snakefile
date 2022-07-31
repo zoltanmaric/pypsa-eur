@@ -67,7 +67,7 @@ if config['enable'].get('retrieve_databundle', True):
 
 
 rule retrieve_load_data:
-    input: HTTP.remote("data.open-power-system-data.org/time_series/2020-10-06/time_series_60min_singleindex.csv", keep_local=True, static=True)
+    input: HTTP.remote("data.open-power-system-data.org/time_series/2019-06-05/time_series_60min_singleindex.csv", keep_local=True, static=True)
     output: "data/load_raw.csv"
     run: move(input[0], output[0])
 
@@ -352,7 +352,7 @@ rule solve_network:
         python="logs/solve_network/elec_s{simpl}_{clusters}_ec_l{ll}_{opts}_python.log",
         memory="logs/solve_network/elec_s{simpl}_{clusters}_ec_l{ll}_{opts}_memory.log"
     benchmark: "benchmarks/solve_network/elec_s{simpl}_{clusters}_ec_l{ll}_{opts}"
-    threads: 4
+    threads: 8
     resources: mem_mb=memory
     shadow: "minimal"
     script: "scripts/solve_network.py"
@@ -368,7 +368,7 @@ rule solve_operations_network:
         python="logs/solve_operations_network/elec_s{simpl}_{clusters}_ec_l{ll}_{opts}_op_python.log",
         memory="logs/solve_operations_network/elec_s{simpl}_{clusters}_ec_l{ll}_{opts}_op_memory.log"
     benchmark: "benchmarks/solve_operations_network/elec_s{simpl}_{clusters}_ec_l{ll}_{opts}"
-    threads: 4
+    threads: 8
     resources: mem_mb=(lambda w: 5000 + 372 * int(w.clusters))
     shadow: "minimal"
     script: "scripts/solve_operations_network.py"

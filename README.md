@@ -20,6 +20,9 @@
   * They weren't, but I added them by listing wind and solar in `renewable_capacities_from_OPSD`
 
 ## Findings
+* CBC doesn't run in parallel unless compiled so. I tried to fix that using https://sysid.github.io/cbc/ but it still
+seems to not use all cores :(
+* Removing GB from the countries list also removes Ireland :/
 * As of 2022-06-27, the most recent available load data on `open-power-system-data` is from 2020-09-30, even though the
 snapshot is from 2020-10-06.
   * In the CSV, the relevant column says `DE_load_actual_entsoe_transparency`, so there may be fresher data available on
