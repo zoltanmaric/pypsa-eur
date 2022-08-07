@@ -83,8 +83,6 @@ import numpy as np
 import pandas as pd
 import re
 
-import sys
-sys.path.append('/Users/zoltan/github/PyPSA')
 import pypsa
 from pypsa.linopf import (get_var, define_constraints, define_variables,
                           linexpr, join_exprs, network_lopf, ilopf)
