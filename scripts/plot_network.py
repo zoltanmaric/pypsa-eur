@@ -270,7 +270,7 @@ if __name__ == "__main__":
     fig, ax = plt.subplots(figsize=map_figsize, subplot_kw={"projection": ccrs.PlateCarree()})
     plot_map(n, config["plotting"], ax=ax, attribute=wildcards.attr)
 
-    fig.savefig(snakemake.output.only_map, dpi=150, bbox_inches='tight')
+    fig.savefig(snakemake.output.only_map, dpi=600, bbox_inches='tight')
 
     ax1 = fig.add_axes([-0.115, 0.625, 0.2, 0.2])
     plot_total_energy_pie(n, config["plotting"], ax=ax1)
