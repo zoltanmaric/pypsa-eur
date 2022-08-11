@@ -14,46 +14,63 @@ jupyter:
 ---
 
 ```python
-import sys
-sys.path.append('/Users/zoltan/github/PyPSA')
-import pypsa
-import matplotlib.pyplot as plt
-import cartopy.crs as ccrs
-plt.style.use("bmh")
-%matplotlib inline
+import scripts.plot_power_flow as ppf
+%load_ext autoreload
+%autoreload
 
-n = pypsa.Network("results/networks/elec_s_37_ec_lcopt_Co2L-3H.nc")
+# n = pypsa.Network("results/networks/elec_s_all_ec_lv1.0_2H.nc")
 
-n.iplot(
-    mapbox=True,
-    size=(2000, 2000)
-)
+# droppables = (n.generators.T.filter(like='OCGT').columns.to_list() +
+#     n.generators.T.filter(like='CCGT').columns.to_list() +
+#     n.generators.T.filter(like='lignite').columns.to_list() +
+#     n.generators.T.filter(like='nuclear').columns.to_list() +
+#     n.generators.T.filter(like='coal').columns.to_list() +
+#     n.generators.T.filter(like='oil').columns.to_list() +
+#     n.generators.T.filter(like='biomass').columns.to_list())
+
+# n.generators.drop(droppables).p_nom.sort_values(ascending=False).head(100)
+
+n = pypsa.Network('networks/base.nc')
+n.loads_t.p_set
+# n.snapshots
+# n.generators.T.filter(like='OCGT').columns.to_list()
 ```
 
 ```python
-import pypsa
-import matplotlib.pyplot as plt
-import cartopy.crs as ccrs
-plt.style.use("bmh")
-%matplotlib inline
+import scripts.plot_power_flow as ppf
+%load_ext autoreload
+%autoreload
 
-n = pypsa.Network("networks/elec.nc")
-# n.plot()
-
-fig,ax = plt.subplots(
-    figsize=(10,10),
-    subplot_kw={"projection": ccrs.PlateCarree()}
-)
-
-n.plot(ax=ax, boundaries=(-9, 28, 30, 75))
-
-ax.axis('off')
+# n = pypsa.Network("results/networks/elec_s_all_ec_lv1.0_2H.nc")
+# n.generators_t.p[n.generators.query('bus=="1005"').index]
+n.generators.query('bus=="7421"')
+# n.generators_t.p.columns
+# n.generators_t.p.max().sort_values()
+# snapshots = n.snapshots[range(326*8, 333*8)]
+# display(snapshots)
+# n.generators_t.p.loc[snapshots].filter(like='solar').head()
+droppables = (n.generators_t.p.filter(like='OCGT').columns.to_list() +
+    n.generators_t.p.filter(like='CCGT').columns.to_list() +
+    n.generators_t.p.filter(like='lignite').columns.to_list() +
+    n.generators_t.p.filter(like='nuclear').columns.to_list() +
+    n.generators_t.p.filter(like='coal').columns.to_list() +
+    n.generators_t.p.filter(like='oil').columns.to_list() +
+    n.generators_t.p.filter(like='biomass').columns.to_list())
+# droppables = ocgt + ccgt + lignite + nuclear + coal
+# display(n.generators_t.p.loc[snapshots].max().drop(droppables).sort_values(ascending=False).head(100))
+display(n.loads_t.p_set.head())
 ```
 
 ```python
-#display(n.components)
-display(n.buses_t.marginal_price.iloc[0].head())
-display(n.lines.head())
+import scripts.plot_power_flow as ppf
+%load_ext autoreload
+%autoreload
+
+n = pypsa.Network("results/networks/elec_s_128_ec_lcopt_Co2L-3H.nc")
+# snapshots = n.snapshots[range(326*8, 333*8)]
+# n.loads_t.p_set.filter(['AL1 0']).loc[snapshots]
+# n = pypsa.Network("results/networks/elec_s_all_ec_lv1.0_2H.nc")
+ppf.colored_network_figure(n)
 ```
 
 ```python
@@ -87,7 +104,7 @@ for i in range(len(fig.data)):
     step["args"][0]["visible"][i] = True  # Toggle i'th trace to "visible"
     steps.append(step)
     
-display(steps[0])
+print(steps[0])
 
 slider = dict(
     active=10,
@@ -100,14 +117,7 @@ fig.update_layout(
     sliders=[slider]
 )
 
-fig.show()
-```
-
-```python
-import scripts.plot_power_flow as ppf
-
-n = pypsa.Network("results/networks/elec_s_all_ec_lv1.0_2H.nc")
-ppf.colored_network_figure(n)
+fig
 ```
 
 ```python
@@ -143,4 +153,47 @@ display(n.generators_t.p / (n.generators_t.p_max_pu * n.generators.p_nom) * 100)
 # generators_t.query("p_nom * p_max_pu > p_set")
 # display(n.storage_units.query("p_nom_extendable"))
 # n.stores.query("e_nom_extendable")
+```
+
+```python
+import pypsa
+import matplotlib.pyplot as plt
+import cartopy.crs as ccrs
+plt.style.use("bmh")
+%matplotlib inline
+
+n = pypsa.Network("networks/elec.nc")
+# n.plot()
+
+fig,ax = plt.subplots(
+    figsize=(10,10),
+    subplot_kw={"projection": ccrs.PlateCarree()}
+)
+
+n.plot(ax=ax, boundaries=(-9, 28, 30, 75))
+
+ax.axis('off')
+```
+
+```python
+import sys
+sys.path.append('/Users/zoltan/github/PyPSA')
+import pypsa
+import matplotlib.pyplot as plt
+import cartopy.crs as ccrs
+plt.style.use("bmh")
+%matplotlib inline
+
+n = pypsa.Network("results/networks/elec_s_37_ec_lcopt_Co2L-3H.nc")
+
+n.iplot(
+    mapbox=True,
+    size=(2000, 2000)
+)
+```
+
+```python
+#display(n.components)
+display(n.buses_t.marginal_price.iloc[0].head())
+display(n.lines.head())
 ```
