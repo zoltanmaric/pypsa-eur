@@ -9,9 +9,10 @@ logging:
   level: INFO
   format: '%(levelname)s:%(name)s:%(message)s'
 
+# See https://pypsa-eur.readthedocs.io/en/latest/wildcards.html#wildcards
 scenario:
   simpl: ['']
-  ll: ['v1.0'] # Limit lines and links to 1.0x of current volume (i.e. no expansion)
+  ll: ['v1.1'] # Limit lines and links to factor multiple of current volume
   clusters: [all]
   opts: [2H]
 

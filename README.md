@@ -20,8 +20,12 @@
   * They weren't, but I added them by listing wind and solar in `renewable_capacities_from_OPSD`
 
 ## Findings
+* Running `ilopf` on `lv1.01` succeeds on the first few iterations, but fails on later iterations with Gurobi
+  reporting "Numerical trouble encountered". Reducing the number of iterations may help, but it's weird
 * CBC doesn't run in parallel unless compiled so. I tried to fix that using https://sysid.github.io/cbc/ but it still
 seems to not use all cores :(
+  * Actually, the default simplex algorithm is inherently sequential. Gurobi runs it in parallel with several
+  cores of the barrier algorith (whose factorization stage _can_ be parallelised)
 * Removing GB from the countries list also removes Ireland :/
 * As of 2022-06-27, the most recent available load data on `open-power-system-data` is from 2020-09-30, even though the
 snapshot is from 2020-10-06.
