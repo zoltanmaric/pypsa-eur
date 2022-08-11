@@ -41,25 +41,17 @@ import scripts.plot_power_flow as ppf
 %load_ext autoreload
 %autoreload
 
-n = pypsa.Network("results/networks/elec_s_all_ec_lv1.1_2H.nc")
+# n = pypsa.Network("results/networks/elec_s_all_ec_lv1.1_2H.nc")
+n = pypsa.Network("results/networks/elec_s_37_ec_lcopt_Co2L-3H.nc")
 # n.generators_t.p[n.generators.query('bus=="1005"').index]
-n.generators.query('bus=="7421"')
-# n.generators_t.p.columns
-# n.generators_t.p.max().sort_values()
-# snapshots = n.snapshots[range(326*8, 333*8)]
-# # display(snapshots)
-# # n.generators_t.p.loc[snapshots].filter(like='solar').head()
-# droppables = (n.generators_t.p.filter(like='OCGT').columns.to_list() +
-#     n.generators_t.p.filter(like='CCGT').columns.to_list() +
-#     n.generators_t.p.filter(like='lignite').columns.to_list() +
-#     n.generators_t.p.filter(like='nuclear').columns.to_list() +
-#     n.generators_t.p.filter(like='coal').columns.to_list() +
-#     n.generators_t.p.filter(like='oil').columns.to_list() +
-#     n.generators_t.p.filter(like='biomass').columns.to_list())
-# droppables = ocgt + ccgt + lignite + nuclear + coal
-# display(n.generators_t.p.loc[snapshots].max().drop(droppables).sort_values(ascending=False).head(100))
-# display(n.loads_t.p.loc[snapshots].head())
-display(n.loads_t.p.head())
+generators = n.generators.query('carrier.str.contains("wind")')
+display(generators.head())
+renamed = n.generators_t.p.filter(like='wind').rename(generators.bus, axis='columns').rename_axis('Bus', axis='columns')
+print('renamed')
+display(renamed.head())
+print('grouped')
+renamed.groupby(by=lambda x: x, axis='columns').sum().head()
+# display(n.loads_t.p.head())
 ```
 
 ```python
@@ -67,10 +59,10 @@ import scripts.plot_power_flow as ppf
 %load_ext autoreload
 %autoreload
 
-n = pypsa.Network("results/networks/elec_s_all_ec_lv1.1_2H.nc")
+# n = pypsa.Network("results/networks/elec_s_all_ec_lv1.1_2H.nc")
+n = pypsa.Network("results/networks/elec_s_37_ec_lcopt_Co2L-3H.nc")
 # snapshots = n.snapshots[range(326*8, 333*8)]
 # n.loads_t.p_set.filter(['AL1 0']).loc[snapshots]
-# n = pypsa.Network("results/networks/elec_s_all_ec_lv1.0_2H.nc")
 fig = ppf.colored_network_figure(n)
 fig.update_layout(height=1300)
 fig
