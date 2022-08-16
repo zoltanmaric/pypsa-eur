@@ -26,7 +26,7 @@ n = pypsa.Network("results/networks/elec_s_all_ec_lv1.1_2H.nc")
 
 # display(n.buses.loc[n.lines.bus1].x)
 # display(n.buses.loc[n.lines.bus1].y)
-display(n.lines.head())
+display(n.lines.filter(['s_nom', 's_max_pu']).head())
 n.lines_t.p0.head()
 ```
 
@@ -52,10 +52,7 @@ import pypsa
 
 n = pypsa.Network("results/networks/elec_s_all_ec_lv1.1_2H.nc")
 # n = pypsa.Network("results/networks/elec_s_37_ec_lcopt_Co2L-3H.nc")
-# snapshots = n.snapshots[range(326*8, 333*8)]
-# n.loads_t.p_set.filter(['AL1 0']).loc[snapshots]
-# fig = ppf.colored_network_figure(n, n.buses_t.p)
-fig = ppf.colored_network_figure(n, 'generation', technology='solar')
+fig = ppf.colored_network_figure(n, 'net_power')
 fig.update_layout(height=1000)
 fig
 ```
