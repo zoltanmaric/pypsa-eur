@@ -16,35 +16,24 @@ jupyter:
 ```python
 import scripts.plot_power_flow as ppf
 import numpy as np
+import pypsa
 %load_ext autoreload
 %autoreload
 
 n = pypsa.Network("results/networks/elec_s_all_ec_lv1.1_2H.nc")
-# n = pypsa.Network("results/networks/elec_s_37_ec_lcopt_Co2L-3H.nc")
-df = n.buses_t.p
-q1 = np.quantile(df, 0.25)
-q3 = np.quantile(df, 0.75)
-print(q1)
-print(q3)
-iqr = q3 - q1
-print()
-print(iqr)
-min = q1 - 1.5 * iqr
-max = q3 + 1.5 * iqr
-print()
-print(min)
-print(max)
+# display(n.buses.loc[n.lines.bus0].x)
+# display(n.buses.loc[n.lines.bus0].y)
 
-df[min < df][df < max]
-
-
-# fig = px.histogram(df)
-# fig.update_layout(height=1000)
+# display(n.buses.loc[n.lines.bus1].x)
+# display(n.buses.loc[n.lines.bus1].y)
+display(n.lines.head())
+n.lines_t.p0.head()
 ```
 
 ```python
 import scripts.plot_power_flow as ppf
 import plotly.express as px
+import pypsa
 %load_ext autoreload
 %autoreload
 
@@ -57,6 +46,7 @@ fig.update_layout(height=1000)
 
 ```python
 import scripts.plot_power_flow as ppf
+import pypsa
 %load_ext autoreload
 %autoreload
 

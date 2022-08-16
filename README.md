@@ -20,6 +20,7 @@
   * They weren't, but I added them by listing wind and solar in `renewable_capacities_from_OPSD`
 
 ## Findings
+* Nice way to highlight lines: [link](https://plotly.com/python/line-charts/#filled-lines)
 * Running `ilopf` on `lv1.01` succeeds on the first few iterations, but fails on later iterations with Gurobi
   reporting "Numerical trouble encountered". Reducing the number of iterations may help, but it's weird
 * CBC doesn't run in parallel unless compiled so. I tried to fix that using https://sysid.github.io/cbc/ but it still
