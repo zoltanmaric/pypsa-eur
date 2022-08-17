@@ -25,6 +25,9 @@ doc/_build
 
 dconf
 
+# Secret keys like the MapBox token are stored in the `.secrets` directory
+.secrets/
+
 .idea/
 # Ignore Jupyter notebook files. Use the jupytext-paired .md files instead
 *.ipynb
