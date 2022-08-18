@@ -13,6 +13,7 @@ gurobi.log
 /resources
 /results
 /networks
+/network_backups
 /benchmarks
 /logs
 /notebooks
