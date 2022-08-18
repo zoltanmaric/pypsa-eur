@@ -51,7 +51,7 @@ import plotly.graph_objects as go
 %load_ext autoreload
 %autoreload
 
-n = pypsa.Network("results/networks/elec_s_all_ec_lv1.1_2H.nc")
+n = pypsa.Network("results/networks/elec_s_all_ec_lv1.01_2H.nc")
 # n = pypsa.Network("results/networks/elec_s_37_ec_lcopt_Co2L-3H.nc")
 fig = ppf.colored_network_figure(n, 'net_power')
 fig.update_layout(height=1000, mapbox=dict(center=go.layout.mapbox.Center(lat=55, lon=12), zoom=3.3))

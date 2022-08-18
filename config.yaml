@@ -12,15 +12,15 @@ logging:
 # See https://pypsa-eur.readthedocs.io/en/latest/wildcards.html#wildcards
 scenario:
   simpl: ['']
-  ll: ['v1.1'] # Limit lines and links to factor multiple of current volume
+  ll: ['v1.01'] # Limit lines and links to factor multiple of current volume
   clusters: [all]
   opts: [2H]
 
 countries: ['AL', 'AT', 'BA', 'BE', 'BG', 'CH', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR', 'GB', 'GR', 'HR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'ME', 'MK', 'NL', 'NO', 'PL', 'PT', 'RO', 'RS', 'SE', 'SI', 'SK']
 
 snapshots:
-  start: "2013-11-23"
-  end: "2013-11-24"
+  start: "2013-07-17"
+  end: "2013-07-18"
   inclusive: 'left' # end is not inclusive
 
 enable:
