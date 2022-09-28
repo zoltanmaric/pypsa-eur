@@ -9,11 +9,14 @@ from snakemake.remote.HTTP import RemoteProvider as HTTPRemoteProvider
 
 HTTP = HTTPRemoteProvider()
 
-if not exists("config.yaml"):
-    copyfile("config.default.yaml", "config.yaml")
+# To ensure not to miss any updates in the upstream `config.default.yaml`,
+# this fork uses config.default.yaml as its main config and makes changes
+# directly in it.
+# if not exists("config.yaml"):
+#     copyfile("config.default.yaml", "config.yaml")
 
 
-configfile: "config.yaml"
+configfile: "config.default.yaml"
 
 
 run = config.get("run", {})

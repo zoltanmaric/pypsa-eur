@@ -14,15 +14,16 @@
 Renewables `expansion_limit` should probably be run along with listing
 at least `solar` and `onwind` in `electricity.extendable_carriers`.
 
-|                                      |                   |                         |
-|--------------------------------------|-------------------|-------------------------|
-| **`scenario.ll`**                    | `v1.01`           | `v1.1`                  |
-| **renewables `expansion_limit`**     | `false`           | `1.0`                   |
-| **Deleted `base.nc`?**               | Yes               | No                      |
-| successful grid expansion iterations | 1                 | 3                       |
-| final iteration outcome              | Numerical trouble | Infeasible or unbounded |
-| num LP iterations in final iteration | 573               | 0                       |
-| output file generated?               | No                | Yes                     |
+|                                                   |                   |                         |                         |
+|---------------------------------------------------|-------------------|-------------------------|-------------------------|
+| **Grid expansion factor (`scenario.ll`)**         | `v1.01`           | `v1.1`                  | `v1.0`                  |
+| **Renewables `expansion_limit`**                  | `false`           | `1.0`                   | `1.1`                   |
+| **Extendable renewables (`extendable_carriers`)** | `[]`              | `[]`                    | `[solar, onwind]`       |
+| Deleted `base.nc`?                                | Yes               | No                      | No                      |
+| successful grid expansion iterations              | 1                 | 3                       | 0                       |
+| final iteration outcome                           | Numerical trouble | Infeasible or unbounded | Infeasible or unbounded |
+| num LP iterations in final iteration              | 573               | 0                       | 0                       |
+| output file generated?                            | No                | Yes                     | Yes                     |
 
 ## Findings
 * Use `datashader` for dense data on a map

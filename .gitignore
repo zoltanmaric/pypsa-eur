@@ -24,6 +24,8 @@ gurobi.log
 
 doc/_build
 
+config.yaml
+
 dconf
 
 # Secret keys like the MapBox token are stored in the `.secrets` directory
