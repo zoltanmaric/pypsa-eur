@@ -10,6 +10,10 @@
 * `build_renewable_profiles` 
 
 ## Feasibility of runs
+
+Renewables `expansion_limit` should probably be run along with listing
+at least `solar` and `onwind` in `electricity.extendable_carriers`.
+
 |                                      |                   |                         |
 |--------------------------------------|-------------------|-------------------------|
 | **`scenario.ll`**                    | `v1.01`           | `v1.1`                  |
