@@ -5,21 +5,27 @@
     transmission-only expansion, and everything in between
 
 ## Short-term tasks
-* [ ] Map configuration [link](https://plotly.com/python/map-configuration/)
-* [ ] Pretty map example ([link](https://plotly.com/python/scattermapbox/))
-  ![](Pretty map.png)
-* [ ] Use `datashader` for dense data on a map
-  ([example](https://medium.com/plotly/building-a-big-data-geographical-dashboard-with-open-source-tools-c5108d7d5683))
-* [ ] Run pipeline on most recent data available
-* [ ] How is the time duration and snapshots related to the optimisation target?
-* [ ] Plot dispatch-only optimisation
-  * [ ] Show amount of curtailment
-* [ ] `config.default.yaml` defines `agg_p_nom_limits: data/agg_p_nom_minmax.csv`
-* [x] Try interactive mapping from `pypsa`
-* [x] How are already installed renewables presented?
-  * They weren't, but I added them by listing wind and solar in `renewable_capacities_from_OPSD`
+
+## How Climate Data is Used
+* `build_renewable_profiles` 
+
+## Feasibility of runs
+|                                      |                   |                         |
+|--------------------------------------|-------------------|-------------------------|
+| **`scenario.ll`**                    | `v1.01`           | `v1.1`                  |
+| **renewables `expansion_limit`**     | `false`           | `1.0`                   |
+| **Deleted `base.nc`?**               | Yes               | No                      |
+| successful grid expansion iterations | 1                 | 3                       |
+| final iteration outcome              | Numerical trouble | Infeasible or unbounded |
+| num LP iterations in final iteration | 573               | 0                       |
+| output file generated?               | No                | Yes                     |
 
 ## Findings
+* Use `datashader` for dense data on a map
+  ([example](https://medium.com/plotly/building-a-big-data-geographical-dashboard-with-open-source-tools-c5108d7d5683))
+* `config.default.yaml` defines `agg_p_nom_limits: data/agg_p_nom_minmax.csv`
+* How are already installed renewables presented?
+  * They weren't, but I added them by listing wind and solar in `renewable_capacities_from_OPSD`
 * Nice way to highlight lines: [link](https://plotly.com/python/line-charts/#filled-lines)
 * Running `ilopf` on `lv1.01` succeeds on the first few iterations, but fails on later iterations with Gurobi
   reporting "Numerical trouble encountered". Reducing the number of iterations may help, but it's weird

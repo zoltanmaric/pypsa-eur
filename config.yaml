@@ -12,7 +12,7 @@ logging:
 # See https://pypsa-eur.readthedocs.io/en/latest/wildcards.html#wildcards
 scenario:
   simpl: ['']
-  ll: ['v1.01'] # Limit lines and links to factor multiple of current volume
+  ll: ['v1.1'] # Limit lines and links to factor multiple of current volume
   clusters: [all]
   opts: [2H]
 
@@ -73,7 +73,7 @@ electricity:
     # Artificially limit maximum capacities to factor * (IRENA capacities),
     # i.e. 110% of <years>'s capacities => expansion_limit: 1.1
     # false: Use estimated renewable potentials determine by the workflow
-    expansion_limit: false
+    expansion_limit: 1.0
     technology_mapping:
       # Wind is the Fueltype in powerplantmatching, onwind, offwind-{ac,dc} the carrier in PyPSA-Eur
       Offshore: [offwind-ac, offwind-dc]
