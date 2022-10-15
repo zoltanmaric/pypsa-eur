@@ -13,6 +13,27 @@ jupyter:
     name: python3
 ---
 
+# Renewable Profiles
+
+```python
+import pypsa
+import xarray as xr
+import atlite
+import numpy as np
+
+cutout_new = atlite.Cutout('cutouts/europe-2022-09-21-era5.nc')
+cutout_new.data.sel(expver=1, x=-12, y=33).albedo.load().plot()
+```
+
+```python
+cutout_new.data.sel(expver=5, x=-12, y=33).albedo.load().plot()
+# res = cutout_new.data.reduce(np.nanmax, 'expver')
+```
+
+```python
+res.sel(x=-12, y=33).albedo.load().plot()
+```
+
 # Buses
 
 ```python
@@ -115,18 +136,4 @@ n = pypsa.Network("results/networks/elec_s_all_ec_lv1.1_2H.nc")
 df = n.buses_t.p.iloc[0]
 fig = px.histogram(df[(-500 < df)][(df < 500)])
 fig.update_layout(height=1000)
-```
-
-```python
-import scripts.plot_power_flow as ppf
-import pypsa
-import plotly.graph_objects as go
-%load_ext autoreload
-%autoreload
-
-n = pypsa.Network("results/networks/elec_s_all_ec_lv1.01_2H.nc")
-# n = pypsa.Network("results/networks/elec_s_37_ec_lcopt_Co2L-3H.nc")
-fig = ppf.colored_network_figure(n, 'net_power')
-fig.update_layout(height=1000, mapbox=dict(center=go.layout.mapbox.Center(lat=55, lon=12), zoom=3.3))
-fig
 ```

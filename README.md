@@ -6,8 +6,63 @@
 
 ## Short-term tasks
 
-## How Climate Data is Used
-* `build_renewable_profiles` 
+## Loading Fresh Climate Data
+* Computed in `build_renewable_profiles`
+  1. Installable potentials based on land use, nature reserves and bathymetry (river depths?) data
+  2. Weather potentials calculated by `atlite`
+     * Uses cutouts defined in `renewable.solar.cutout` (`europe-2013-sarah` for solar)
+
+### Cutouts
+* By default, the cutouts for 2013 are **retrieved** from Zenodo in `retrieve_cutouts`
+* I recreated ERA5 cutouts with atlite by defining a new cutout called `europe-2022-09-21-era5`
+  * The ERA5
+    [website](https://confluence.ecmwf.int/display/CKB/ERA5%3A+data+documentation#ERA5:datadocumentation-Dataupdatefrequency)
+    says data is available with a ~5-day delay from realtime
+  * As of 2022-09-29 13:19, the most recent data available is from 2022-09-22
+* Usually, solar irradiation data is refined with Sarah data, but as of 2022-09-28, that's only available
+  till the end of 2017, so I only use ERA5 data
+* The cutout date range is defined **separately** from the snapshots range
+* The request spanning multiple months looks like this:
+  ```python
+  request = {
+    'product_type': 'reanalysis',
+    'format': 'netcdf',
+    'variable': ['runoff'],
+    'area': [72.0, -12.0, 33.0, 34.8],
+    'grid': [0.3, 0.3],
+    'year': '2022',
+    'month': [1, 2, 3, 4, 5, 6, 7, 8, 9],
+    'day': [
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+      16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
+    ],
+    'time': [
+      '00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
+      '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'
+    ]
+  }
+  ```
+    * I.e. there's not really a way to request data for a part of the final month
+
+### Hydro
+* For building the hydro profile, it seems that storage level calculation presumes at least a week of data
+  `ValueError: Moving window (=168) must between 1 and 48, inclusive`,
+  function `result.rolling` in `atlite/convert.py`
+* When setting a week, I get a new error:
+  ```
+  File "/Users/zoltan/mambaforge/envs/pypsa-eur/lib/python3.9/site-packages/atlite/convert.py", line 746, in runoff
+  assert len(years), "Need at least a full year of data (more is better)"
+  ```
+  * This seems to happen due the `normalize_using_yearly=eia_stats` parameter, because those stats include only data up
+    to 2020: https://www.eia.gov/international/data/world/electricity/electricity-generation?pd=2&p=000000000000000000000000000000g&u=1&f=A&v=mapbubble&a=-&i=none&vo=value&t=R&g=000000000000002&l=73-1028i008017kg6368g80a4k000e0ag00gg0004g8g0ho00g000400008&s=315532800000&e=1577836800000&ev=false&
+  
+
+## Loading Fresh Load Data
+* This is currently loaded from OPSD in the `retrieve_load_data` in the Snakefile, which only has data until
+  2020-09-30 (as of 2022-09-28)
+  * As a quickfix, I replaced the 2020-09-21 date with 2022-09-21 in `data/load_raw.csv` 
+
+
 
 ## Feasibility of runs
 
@@ -62,6 +117,14 @@ snapshot is from 2020-10-06.
   ```
 * [Paper](https://www.sciencedirect.com/science/article/pii/S0306261921002439) by Tom Brown's gang from June 2021
   shows how to cluster smart
+
+## Snakemake DAGs
+* To plot a DAG, run
+```bash
+# The `tail -n +4` bit skips the Gurobi logging
+snakemake -n --rulegraph solve_all_networks | tail -n +4 | dot -Tsvg > dags/solve_all_networks.svg
+```
+![](dags/solve_all_networks.svg)
 
 ---
 
