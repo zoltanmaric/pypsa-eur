@@ -96,6 +96,7 @@ import logging
 import atlite
 import geopandas as gpd
 import pandas as pd
+import numpy as np
 from _helpers import configure_logging
 
 logger = logging.getLogger(__name__)
@@ -128,3 +129,24 @@ if __name__ == "__main__":
     features = cutout_params.pop("features", None)
     cutout = atlite.Cutout(snakemake.output[0], **cutout_params)
     cutout.prepare(features=features)
+
+    # See https://github.com/PyPSA/atlite/issues/190
+    if 'expver' in cutout.data.dims.mapping.keys():
+        logging.warning("RED ALERT: editing cutout data!")
+        cutout.data = cutout.data.reduce(np.nanmax, 'expver')
+
+        # For some reason, I get a file permission error if overwriting the
+        # cutout file in cutout.path directly, so I copied the write-to-temp-and-move
+        # procedure from `atlite/data.py`.
+        import os
+        from tempfile import mkstemp
+        directory, filename = os.path.split(str(cutout.path))
+        fd, tmp = mkstemp(suffix=filename, dir=directory)
+        os.close(fd)
+
+        cutout.data.to_netcdf(tmp)
+
+        if cutout.path.exists():
+            cutout.data.close()
+            cutout.path.unlink()
+        os.rename(tmp, cutout.path)
