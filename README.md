@@ -14,7 +14,7 @@
 
 ### Cutouts
 * By default, the cutouts for 2013 are **retrieved** from Zenodo in `retrieve_cutouts`
-* I recreated ERA5 cutouts with atlite by defining a new cutout called `europe-2022-09-21-era5`
+* I recreated ERA5 cutouts with atlite by defining a new cutout called `europe-2022-era5`
   * The ERA5
     [website](https://confluence.ecmwf.int/display/CKB/ERA5%3A+data+documentation#ERA5:datadocumentation-Dataupdatefrequency)
     says data is available with a ~5-day delay from realtime

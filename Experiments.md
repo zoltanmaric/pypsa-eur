@@ -21,7 +21,7 @@ import xarray as xr
 import atlite
 import numpy as np
 
-cutout_new = atlite.Cutout('cutouts/europe-2022-09-21-era5.nc')
+cutout_new = atlite.Cutout('cutouts/europe-2022-era5.nc')
 cutout_new.data.sel(expver=1, x=-12, y=33).albedo.load().plot()
 ```
 

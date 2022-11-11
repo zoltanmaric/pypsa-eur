@@ -23,16 +23,16 @@ scenario:
 countries: ['AL', 'AT', 'BA', 'BE', 'BG', 'CH', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR', 'GB', 'GR', 'HR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'ME', 'MK', 'NL', 'NO', 'PL', 'PT', 'RO', 'RS', 'SE', 'SI', 'SK']
 
 snapshots:
-  start: "2013-07-17"
-  end: "2013-07-18"
+  start: "2022-10-31"
+  end: "2022-11-01"
   inclusive: 'left' # end is not inclusive
 
 enable:
   prepare_links_p_nom: false
   retrieve_databundle: true
   retrieve_cost_data: true
-  build_cutout: false
-  retrieve_cutout: true
+  build_cutout: true
+  retrieve_cutout: false
   build_natura_raster: false
   retrieve_natura_raster: true
   custom_busmap: false
@@ -86,35 +86,49 @@ electricity:
 
 atlite:
   nprocesses: 8
+  # Disabled by default because of a large performance penalty. See https://github.com/PyPSA/pypsa-eur/pull/376
+  show_progress: false
   cutouts:
-    # use 'base' to determine geographical bounds and time span from config
-    # base:
-      # module: era5
-    europe-2013-era5:
+#    # use 'base' to determine geographical bounds and time span from config
+#    # base:
+#      # module: era5
+#    europe-2013-era5:
+#      module: era5 # in priority order
+#      x: [-12., 35.]
+#      y: [33., 72]
+#      dx: 0.3
+#      dy: 0.3
+#      time: ['2013', '2013']
+#    europe-2013-sarah:
+#      module: [sarah, era5] # in priority order
+#      x: [-12., 45.]
+#      y: [33., 65]
+#      dx: 0.2
+#      dy: 0.2
+#      time: ['2013', '2013']
+#      sarah_interpolate: false
+#      # See
+#      # https://atlite.readthedocs.io/en/latest/examples/create_cutout_SARAH.html?highlight=sarah#Creating-a-Cutout-with-the-SARAH-2-dataset
+#      # on how to download the source data into the `sarah_dir`
+#      sarah_dir: data/bundle/sarah
+#      features: [influx, temperature]
+
+    europe-2022-era5:
       module: era5 # in priority order
-      x: [-12., 35.]
-      y: [33., 72]
+      # There's an issue with cutouts for shipping routes, so I'm commenting out the bounds.
+      # See https://github.com/PyPSA/pypsa-eur/issues/434#issuecomment-1295113156
+      # x: [-12., 35.]
+      # y: [33., 72]
       dx: 0.3
       dy: 0.3
-      time: ['2013', '2013']
-    europe-2013-sarah:
-      module: [sarah, era5] # in priority order
-      x: [-12., 45.]
-      y: [33., 65]
-      dx: 0.2
-      dy: 0.2
-      time: ['2013', '2013']
-      sarah_interpolate: false
-      # See
-      # https://atlite.readthedocs.io/en/latest/examples/create_cutout_SARAH.html?highlight=sarah#Creating-a-Cutout-with-the-SARAH-2-dataset
-      # on how to download the source data into the `sarah_dir`
-      sarah_dir: data/bundle/sarah
-      features: [influx, temperature]
+      # Right end inclusive (up to the end of the last day)
+      # Do a full year, else `build_hydro_profile` will complain: "Need at least a full year of data (more is better)"
+      time: ['2021-11-01', '2022-10-31']
 
 
 renewable:
   onwind:
-    cutout: europe-2013-era5
+    cutout: europe-2022-era5
     resource:
       method: wind
       turbine: Vestas_V112_3MW
@@ -133,7 +147,7 @@ renewable:
     potential: simple # or conservative
     clip_p_max_pu: 1.e-2
   offwind-ac:
-    cutout: europe-2013-era5
+    cutout: europe-2022-era5
     resource:
       method: wind
       turbine: NREL_ReferenceTurbine_5MW_offshore
@@ -153,7 +167,7 @@ renewable:
     potential: simple # or conservative
     clip_p_max_pu: 1.e-2
   offwind-dc:
-    cutout: europe-2013-era5
+    cutout: europe-2022-era5
     resource:
       method: wind
       turbine: NREL_ReferenceTurbine_5MW_offshore
@@ -173,7 +187,8 @@ renewable:
     potential: simple # or conservative
     clip_p_max_pu: 1.e-2
   solar:
-    cutout: europe-2013-sarah
+    # As of 2022-09-28, the most recent Sarah data (ed. 2.1) covers up to 2017-12-31, so we use ERA5 instead
+    cutout: europe-2022-era5
     resource:
       method: pv
       panel: CSi
@@ -195,7 +210,7 @@ renewable:
     potential: simple # or conservative
     clip_p_max_pu: 1.e-2
   hydro:
-    cutout: europe-2013-era5
+    cutout: europe-2022-era5
     carriers: [ror, PHS, hydro]
     PHS_max_hours: 6
     hydro_max_hours: "energy_capacity_totals_by_country" # one of energy_capacity_totals_by_country, estimate_by_large_installations or a float
@@ -227,7 +242,7 @@ transformers:
   type: ''
 
 load:
-  power_statistics: true # only for files from <2019; set false in order to get ENTSOE transparency data
+  power_statistics: false # only for files from <2019; set false in order to get ENTSOE transparency data
   interpolate_limit: 3 # data gaps up until this size are interpolated linearly
   time_shift_for_large_gaps: 1w # data gaps up until this size are copied by copying from
   manual_adjustments: true # false
