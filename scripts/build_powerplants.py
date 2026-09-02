@@ -166,6 +166,8 @@ def map_to_country_bus(
     """
     Assign power plants to region buses of the same country.
 
+    Regions carry their country in the ``country`` column (bus names are not
+    guaranteed to start with a country code, e.g. with ``clusters: all``).
     First, spatial join is performed per country to avoid cross-border
     misassignment. Remaining unmatched plants are assigned via nearest
     neighbor (max 10000m) within the same country.
@@ -174,7 +176,7 @@ def map_to_country_bus(
     unmatched = []
 
     for country, plants in ppl.groupby("Country"):
-        country_regions = regions[regions.index.str[:2] == country]
+        country_regions = regions.loc[regions["country"] == country, ["geometry"]]
         joined = (
             plants.sjoin(country_regions)
             .rename(columns={"name": "bus"})
@@ -188,7 +190,7 @@ def map_to_country_bus(
     if unmatched:
         unmatched = pd.concat(unmatched)
         for country, plants in unmatched.groupby("Country"):
-            country_regions = regions[regions.index.str[:2] == country]
+            country_regions = regions.loc[regions["country"] == country, ["geometry"]]
             nearest = (
                 plants.to_crs(3035)
                 .sjoin_nearest(country_regions.to_crs(3035), max_distance=max_distance)
