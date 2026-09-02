@@ -134,8 +134,10 @@ if __name__ == "__main__":
     if snakemake.wildcards.technology.startswith("offwind"):
         # for offshore regions, the shortest distance to the shoreline is used
         offshore_regions = availability.coords["bus"].values
-        regions = regions.loc[offshore_regions]
-        regions = regions.geometry.map(lambda g: _simplify_polys(g, minarea=1)).set_crs(
+        # Offshore-only substations (in an EEZ, outside every country shape) have
+        # no onshore region; the whole onshore area serves as their shoreline proxy.
+        regions = regions.geometry.reindex(offshore_regions).fillna(regions.union_all())
+        regions = regions.map(lambda g: _simplify_polys(g, minarea=1)).set_crs(
             regions.crs
         )
     else:
