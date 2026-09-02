@@ -6,6 +6,8 @@
 <!-- Upcoming Release -->
 <!-- ================= -->
 
+* Fix: clustered regions keep their `country` column, and `build_powerplants` reads the country from it instead of from a bus-name prefix, so `clusters: all` assigns power plants to buses ([#XXXX](https://github.com/PyPSA/pypsa-eur/pull/XXXX), closes [#2262](https://github.com/PyPSA/pypsa-eur/issues/2262)).
+
 * Fix: fix bugs in retrofitting scripts which happens due to pandas version change and other code changes ([#2273](https://github.com/PyPSA/pypsa-eur/pull/2273))
 
 * Fix: focus_weights related TypeError during cluster_network ([#2277](https://github.com/PyPSA/pypsa-eur/pull/2277))
