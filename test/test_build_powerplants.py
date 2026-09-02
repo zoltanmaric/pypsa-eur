@@ -9,13 +9,16 @@ Tests the functionalities of scripts/build_powerplants.py.
 import pathlib
 import sys
 
+import geopandas as gpd
 import numpy as np
 import pandas as pd
 import pytest
+from shapely.geometry import box
 
 sys.path.append("./scripts")
 
 from build_powerplants import (
+    map_to_country_bus,
     add_custom_powerplants,
     replace_natural_gas_fueltype,
     replace_natural_gas_technology,
@@ -147,3 +150,25 @@ def test_replace_natural_gas_fueltype():
     modified_df = input_df.assign(Fueltype=replace_natural_gas_fueltype)
     comparison_df = modified_df.compare(reference_df)
     assert comparison_df.empty
+
+
+def test_map_to_country_bus_uses_the_country_column():
+    # Region names carry no country prefix (as with ``clusters: all``, where buses keep OSM ids)
+    regions = gpd.GeoDataFrame(
+        {"country": ["DE", "FR"]},
+        index=pd.Index(["relation/1-380", "way/2-225"], name="name"),
+        geometry=[box(10, 50, 11, 51), box(2, 48, 3, 49)],
+        crs=4326,
+    )
+    plants = gpd.GeoDataFrame(
+        {"Country": ["DE", "FR", "FR"]},
+        geometry=gpd.points_from_xy([10.5, 2.5, 3.02], [50.5, 48.5, 48.5]),
+        crs=4326,
+    )
+
+    assigned = map_to_country_bus(plants, regions)
+
+    # inside their regions; the third plant is ~1.5 km outside and snaps to the nearest one
+    assert assigned.bus.tolist() == ["relation/1-380", "way/2-225", "way/2-225"]
+    # the regions' country column must not leak into the plant table
+    assert "country" not in assigned.columns
