@@ -364,14 +364,17 @@ def load_and_aggregate_powerplants(
     )
 
     disaggregated = ppl[~to_aggregate].copy()
-    disaggregated.index = (
+    names = (
         disaggregated.bus
         + " "
         + disaggregated.carrier
         + " "
         + disaggregated.index.astype(str)
-        + " "
-        + disaggregated.name
+    )
+    # the plant name is optional; an all-missing column has no string dtype to add
+    has_name = disaggregated.name.notna()
+    disaggregated.index = names.where(
+        ~has_name, names + " " + disaggregated.name.astype(str)
     )
     disaggregated = disaggregated[aggregated.columns]
 
