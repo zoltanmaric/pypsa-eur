@@ -6,6 +6,8 @@
 <!-- Upcoming Release -->
 <!-- ================= -->
 
+* Fix: clustered regions keep their `country` column, and `build_powerplants` reads the country from it instead of from a bus-name prefix, so `clusters: all` assigns power plants to buses and builds the Ukraine/Moldova availability matrices ([#XXXX](https://github.com/PyPSA/pypsa-eur/pull/XXXX), closes [#2262](https://github.com/PyPSA/pypsa-eur/issues/2262)).
+
 * Fix: retain country codes in clustered regions for country-based profile selection with unclustered OSM bus names.
 * Fix: `load: fixed_year` no longer yields all-NaN load when it differs from the snapshot year ([#2209](https://github.com/PyPSA/pypsa-eur/pull/2209)).
 * Fix: Per-country levels in `clustering: administrative: countries` are no longer ignored. Country keys directly under `clustering: administrative` remain supported ([#2210](https://github.com/PyPSA/pypsa-eur/pull/2210)).
