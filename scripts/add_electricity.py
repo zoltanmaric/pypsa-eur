@@ -1195,6 +1195,18 @@ def attach_stores(
     )
 
 
+def load_monthly_fuel_price(fn: str, snapshots: pd.DatetimeIndex) -> pd.DataFrame:
+    """
+    Read monthly fuel prices and carry them onto `snapshots`.
+
+    `reindex(snapshots)` drops the monthly rows, so a window that does not start on a month
+    boundary keeps no value for a following `ffill()` to carry and every cost becomes NaN.
+    Filling during the reindex takes the price of the month each snapshot falls in.
+    """
+    prices = pd.read_csv(fn, index_col=0, parse_dates=True)
+    return prices.reindex(snapshots, method="ffill")
+
+
 if __name__ == "__main__":
     if "snakemake" not in globals():
         from scripts._helpers import mock_snakemake
@@ -1253,10 +1265,7 @@ if __name__ == "__main__":
         unit_commitment = None
 
     if params.conventional["dynamic_fuel_price"]:
-        fuel_price = pd.read_csv(
-            snakemake.input.fuel_price, index_col=0, parse_dates=True
-        )
-        fuel_price = fuel_price.reindex(n.snapshots).ffill()
+        fuel_price = load_monthly_fuel_price(snakemake.input.fuel_price, n.snapshots)
     else:
         fuel_price = None
 
