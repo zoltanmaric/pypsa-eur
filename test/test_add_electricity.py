@@ -4,7 +4,10 @@
 
 import pandas as pd
 
-from scripts.add_electricity import load_and_aggregate_powerplants
+from scripts.add_electricity import (
+    load_and_aggregate_powerplants,
+    load_monthly_fuel_price,
+)
 
 COSTS = pd.DataFrame(
     {
@@ -46,3 +49,17 @@ def test_disaggregated_plants_without_names_get_named(tmp_path):
 
     assert generators.loc["FR0 1 nuclear", "p_nom"] == 1600.0
     assert set(generators.index) == {"FR0 1 nuclear", "DE0 1 CCGT 0", "DE0 1 CCGT 1"}
+
+
+def test_load_monthly_fuel_price_covers_a_window_off_the_month_boundary(tmp_path):
+    fn = tmp_path / "monthly_fuel_price.csv"
+    pd.DataFrame(
+        {"gas": [30.0, 40.0]},
+        index=pd.to_datetime(["2024-08-01", "2024-09-01"]),
+    ).to_csv(fn)
+
+    snapshots = pd.date_range("2024-08-29", periods=12, freq="2h")
+    prices = load_monthly_fuel_price(fn, snapshots)
+
+    assert not prices.isna().any().any()
+    assert (prices["gas"] == 30.0).all()
