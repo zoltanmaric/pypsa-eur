@@ -6,6 +6,8 @@
 <!-- Upcoming Release -->
 <!-- ================= -->
 
+* Fix: `retrieve_co2_prices` reads the API response through a buffer; under pandas 3 `read_json` treats a bare string as a path, so the rule failed with `FileNotFoundError` and `emission_prices: dynamic` could not be used ([#XXXX](https://github.com/PyPSA/pypsa-eur/pull/XXXX)).
+
 * Fix: `add_electricity` carries monthly fuel prices onto snapshots that do not start on a month boundary; previously `dynamic_fuel_price: true` left every conventional generator with a NaN marginal cost for such a window ([#XXXX](https://github.com/PyPSA/pypsa-eur/pull/XXXX)).
 
 * Fix: fix bugs in retrofitting scripts which happens due to pandas version change and other code changes ([#2273](https://github.com/PyPSA/pypsa-eur/pull/2273))
