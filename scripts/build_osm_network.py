@@ -33,6 +33,7 @@ BUSES_COLUMNS = [
     "voltage",
     "dc",
     "symbol",
+    "osm_name",
     "under_construction",
     "tags",
     "x",
@@ -1564,6 +1565,13 @@ def _finalise_network(all_buses, converters, lines, links, transformers):
     # BUSES
     logger.info("- buses")
     buses_all["symbol"] = "Substation"
+    # The OSM substation name is carried through as "osm_name": in PyPSA a
+    # component's "name" is its index, so a bus column called "name" would
+    # collide. Buses without an OSM name (virtual buses, DC buses) get an
+    # empty string, as downstream code does string operations on this column.
+    buses_all["osm_name"] = (
+        buses_all["name"].fillna("").astype(str) if "name" in buses_all.columns else ""
+    )
     buses_all["under_construction"] = False
     buses_all["tags"] = buses_all["contains"].apply(_contains_to_tags)
     buses_all["tags"] = buses_all["tags"].apply(_tags_to_osm_ids)

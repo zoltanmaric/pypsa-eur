@@ -1086,6 +1086,12 @@ def _aggregate_substations(df_substations: pd.DataFrame) -> pd.DataFrame:
     logger.info("Aggregating substations by id, voltage, and country.")
     df_substations = df_substations.copy()
 
+    def _first_name(names: pd.Series) -> str:
+        """Return the first non-empty OSM name among the merged objects."""
+        non_empty = names.dropna().astype(str).str.strip()
+        non_empty = non_empty[non_empty != ""]
+        return non_empty.iloc[0] if not non_empty.empty else ""
+
     # Strip -suffix from 'id' to group by original bus_id before splitting
     df_substations.loc[:, "id"] = df_substations["id"].apply(
         lambda x: x.split("-")[0] if "-" in x else x
@@ -1097,7 +1103,7 @@ def _aggregate_substations(df_substations: pd.DataFrame) -> pd.DataFrame:
         .agg(
             {
                 **{
-                    col: "first"
+                    col: (_first_name if col == "name" else "first")
                     for col in df_substations.columns
                     if col not in ["id", "voltage", "country"]
                 },
@@ -1213,6 +1219,7 @@ def _finalise_substations(df_substations):
     df_substations = df_substations[
         [
             "bus_id",
+            "name",
             "voltage",
             "country",
             "x_node",
@@ -1223,6 +1230,10 @@ def _finalise_substations(df_substations):
             "contains",
         ]
     ]
+
+    # Downstream consumers do string operations on the name, so nameless
+    # substations must carry an empty string rather than NaN.
+    df_substations["name"] = df_substations["name"].fillna("").astype(str)
 
     # Substation data types (skip for empty to avoid errors)
     if not df_substations.empty:
@@ -1410,6 +1421,7 @@ def _import_substations(path_substations):
         "id",
         "geometry",
         "country",
+        "name",
         "power",
         "substation",
         "voltage",
@@ -1421,6 +1433,7 @@ def _import_substations(path_substations):
     cols_substations_relation = [
         "id",
         "country",
+        "name",
         "power",
         "substation",
         "voltage",
@@ -1457,6 +1470,7 @@ def _import_substations(path_substations):
                 df["country"] = country
 
                 col_tags = [
+                    "name",
                     "power",
                     "substation",
                     "voltage",
