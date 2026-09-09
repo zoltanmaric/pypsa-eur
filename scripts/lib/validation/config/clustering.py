@@ -44,6 +44,10 @@ class _BuildBiddingZonesConfig(BaseModel):
 class _SimplifyNetworkConfig(BaseModel):
     """Configuration for `clustering.simplify_network` settings."""
 
+    to_380: bool = Field(
+        True,
+        description="Controls whether the whole network is mapped onto a single 380 kV layer, which removes all transformers and flattens the voltage levels. If false, the original voltage levels and transformers are kept.",
+    )
     to_substations: bool = Field(
         False,
         description="Aggregates all nodes without power injection (positive or negative, i.e. demand or generation) to electrically closest ones.",

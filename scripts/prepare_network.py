@@ -153,7 +153,10 @@ def add_dynamic_emission_prices(n, fn):
 
 def set_line_s_max_pu(n, s_max_pu=0.7):
     n.lines["s_max_pu"] = s_max_pu
-    logger.info(f"N-1 security margin of lines set to {s_max_pu}")
+    # Transformers survive simplification when clustering.simplify_network.to_380
+    # is false, and need the same N-1 margin as the lines.
+    n.transformers["s_max_pu"] = s_max_pu
+    logger.info(f"N-1 security margin of lines and transformers set to {s_max_pu}")
 
 
 def set_transmission_limit(n, kind, factor, costs, Nyears=1):
