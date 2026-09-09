@@ -30,6 +30,11 @@
 
 * Fix: `retrieve_osm_data` raised `UnboundLocalError` from its own error handler when
   `requests.post` failed before binding `response` (connection refused, DNS failure).
+* Add: `clustering.simplify_network.to_380` now controls whether the network is mapped onto a single
+  380 kV layer. It defaults to `true`, the previous unconditional behaviour; setting it to `false` keeps
+  the original voltage levels and the transformers between them. `set_line_s_max_pu` in
+  [prepare_network][] now applies the N-1 security margin to transformers as well as lines, which only
+  matters when transformers survive simplification.
 
 * Fix: clustered regions keep their `country` column, and `build_powerplants` reads the country from it instead of from a bus-name prefix, so `clusters: all` assigns power plants to buses and builds the Ukraine/Moldova availability matrices ([#XXXX](https://github.com/PyPSA/pypsa-eur/pull/XXXX), closes [#2262](https://github.com/PyPSA/pypsa-eur/issues/2262)).
 * Fix: `add_electricity` no longer fails under pandas 3 when the plants kept disaggregated (`clustering: exclude_carriers`) have no plant name ([#XXXX](https://github.com/PyPSA/pypsa-eur/pull/XXXX)).

@@ -375,7 +375,7 @@ def cap_transmission_capacity(
     link_max_extension : float, optional
         Maximum extension per DC link [MW]. If None, no limit is applied.
     line_max_pu : float, optional
-        Set N-1 security margin for AC lines (e.g., 0.7 for 70% utilization).
+        Set N-1 security margin for AC lines and transformers.
         If None, s_max_pu is not modified.
     link_max_pu : float, optional
         Set maximum utilization for DC links (e.g., 0.7 for 70% utilization).
@@ -386,10 +386,11 @@ def cap_transmission_capacity(
     All parameters accept None to skip that particular constraint. This allows
     selective application of limits without needing to specify all parameters.
     """
-    # Set N-1 security margin (s_max_pu) for AC lines if specified
+    # Transformers retained at their original voltage need the same security margin.
     if line_max_pu is not None:
         n.lines["s_max_pu"] = line_max_pu
-        logger.info(f"N-1 security margin of lines set to {line_max_pu}")
+        n.transformers["s_max_pu"] = line_max_pu
+        logger.info(f"N-1 security margin of lines and transformers set to {line_max_pu}")
 
     # Set maximum utilization (p_max_pu) for DC links if specified
     if link_max_pu is not None:
