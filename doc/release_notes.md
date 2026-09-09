@@ -35,6 +35,11 @@
 
 * Fix: `retrieve_osm_data` raised `UnboundLocalError` from its own error handler when
   `requests.post` failed before binding `response` (connection refused, DNS failure).
+* Add: `clustering.simplify_network.to_380` now controls whether the network is mapped onto a single
+  380 kV layer. It defaults to `true`, the previous unconditional behaviour; setting it to `false` keeps
+  the original voltage levels and the transformers between them. `set_line_s_max_pu` in
+  [prepare_network][] now applies the N-1 security margin to transformers as well as lines, which only
+  matters when transformers survive simplification.
 
 * Fix: fix bugs in retrofitting scripts which happens due to pandas version change and other code changes ([#2273](https://github.com/PyPSA/pypsa-eur/pull/2273))
 

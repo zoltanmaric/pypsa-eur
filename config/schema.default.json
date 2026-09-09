@@ -536,6 +536,11 @@
         "simplify_network": {
           "description": "Configuration for `clustering.simplify_network` settings.",
           "properties": {
+            "to_380": {
+              "default": true,
+              "description": "Controls whether the whole network is mapped onto a single 380 kV layer, which removes all transformers and flattens the voltage levels. If false, the original voltage levels and transformers are kept.",
+              "type": "boolean"
+            },
             "to_substations": {
               "default": false,
               "description": "Aggregates all nodes without power injection (positive or negative, i.e. demand or generation) to electrically closest ones.",
@@ -7633,6 +7638,11 @@
     "_SimplifyNetworkConfig": {
       "description": "Configuration for `clustering.simplify_network` settings.",
       "properties": {
+        "to_380": {
+          "default": true,
+          "description": "Controls whether the whole network is mapped onto a single 380 kV layer, which removes all transformers and flattens the voltage levels. If false, the original voltage levels and transformers are kept.",
+          "type": "boolean"
+        },
         "to_substations": {
           "default": false,
           "description": "Aggregates all nodes without power injection (positive or negative, i.e. demand or generation) to electrically closest ones.",
@@ -12070,6 +12080,11 @@
         "simplify_network": {
           "description": "Configuration for `clustering.simplify_network` settings.",
           "properties": {
+            "to_380": {
+              "default": true,
+              "description": "Controls whether the whole network is mapped onto a single 380 kV layer, which removes all transformers and flattens the voltage levels. If false, the original voltage levels and transformers are kept.",
+              "type": "boolean"
+            },
             "to_substations": {
               "default": false,
               "description": "Aggregates all nodes without power injection (positive or negative, i.e. demand or generation) to electrically closest ones.",
