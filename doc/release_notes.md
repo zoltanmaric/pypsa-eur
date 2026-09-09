@@ -6,6 +6,11 @@
 <!-- Upcoming Release -->
 <!-- ================= -->
 
+* Add: carry the OpenStreetMap substation name through the OSM processing pipeline into `buses.csv` as
+  the `osm_name` column, so downstream consumers get a human-readable label instead of only an OSM object
+  id. Substations aggregated from several OSM objects take the first non-empty name; substations without a
+  name in OSM get an empty string.
+
 * Fix: fix bugs in retrofitting scripts which happens due to pandas version change and other code changes ([#2273](https://github.com/PyPSA/pypsa-eur/pull/2273))
 
 * Fix: focus_weights related TypeError during cluster_network ([#2277](https://github.com/PyPSA/pypsa-eur/pull/2277))
