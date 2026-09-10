@@ -289,9 +289,13 @@ def split_overpassing_lines(lines, buses, distance_crs=DISTANCE_CRS, tol=1):
         nearby_buses = buses_epsgmod.iloc[possible_matches]
         bus_in_tol_epsg = nearby_buses[nearby_buses.geometry.distance(line_geom) <= tol]
 
-        # Get boundary points
-        endpoint0 = line_geom.boundary.geoms[0]
-        endpoint1 = line_geom.boundary.geoms[1]
+        # Get boundary points. A closed line (a ring) has an empty boundary, so it has no
+        # endpoints to exclude and cannot be split against them.
+        boundary = line_geom.boundary
+        if len(boundary.geoms) < 2:
+            continue
+        endpoint0 = boundary.geoms[0]
+        endpoint1 = boundary.geoms[1]
 
         # Calculate distances
         dist_to_ep0 = bus_in_tol_epsg.geometry.distance(endpoint0)

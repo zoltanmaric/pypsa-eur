@@ -6,6 +6,19 @@
 <!-- Upcoming Release -->
 <!-- ================= -->
 
+* Fix: the OSM build path (`data: osm: source: build`) could not run under pandas 3.
+  `astype(str)` on an Arrow-backed column keeps `pd.NA` rather than the literal `"nan"`
+  the cleaning chains strip, so `re.sub` received a non-string; and `split_count` was
+  created as strings then cast to int through `.loc[:, col]`, which sets in place and
+  refuses the dtype change.
+
+* Fix: `split_overpassing_lines` raised `IndexError` on a closed line. A ring has an empty
+  boundary, so it has no endpoints to exclude and cannot be split against them.
+
+* Fix: `process_offshore_regions` raised `KeyError: 'name'` for a country with an offshore
+  shape but no offshore substation — the voronoi of an empty point set has no regions to
+  dissolve.
+
 * Fix: clustered regions keep their `country` column, and `build_powerplants` reads the country from it instead of from a bus-name prefix, so `clusters: all` assigns power plants to buses and builds the Ukraine/Moldova availability matrices ([#XXXX](https://github.com/PyPSA/pypsa-eur/pull/XXXX), closes [#2262](https://github.com/PyPSA/pypsa-eur/issues/2262)).
 * Fix: `add_electricity` no longer fails under pandas 3 when the plants kept disaggregated (`clustering: exclude_carriers`) have no plant name ([#XXXX](https://github.com/PyPSA/pypsa-eur/pull/XXXX)).
 * Fix: `build_renewable_profiles` no longer fails for offshore wind when an offshore region belongs to a substation without an onshore region (e.g. with `clusters: all`); the onshore area serves as its shoreline-distance proxy ([#XXXX](https://github.com/PyPSA/pypsa-eur/pull/XXXX), see [#2192](https://github.com/PyPSA/pypsa-eur/issues/2192)).

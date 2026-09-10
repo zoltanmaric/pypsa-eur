@@ -152,6 +152,7 @@ def _clean_circuits(column):
         .str.replace("1/3", "1")
         .str.replace("<na>", "")
         .str.replace("nan", "")
+        .fillna("")
     )
 
     # Remove all remaining non-numeric characters except for semicolons
@@ -180,6 +181,7 @@ def _clean_cables(column):
         .str.replace("3x2;2", "3")
         .str.replace("<na>", "")
         .str.replace("nan", "")
+        .fillna("")
     )
 
     # Remove all remaining non-numeric characters except for semicolons
@@ -218,6 +220,7 @@ def _clean_wires(column):
         .str.replace("_", "")
         .str.replace("<na>", "")
         .str.replace("nan", "")
+        .fillna("")
     )
 
     # Remove all remaining non-numeric characters except for semicolons
@@ -271,6 +274,7 @@ def _clean_frequency(column):
         .str.replace(" ", "")
         .str.replace("<NA>", "")
         .str.replace("nan", "")
+        .fillna("")
     )
 
     # Remove all remaining non-numeric characters except for semicolons
@@ -803,10 +807,13 @@ def _clean_substations(df_substations, list_voltages):
         _check_voltage, list_voltages=list_voltages
     )
     df_substations = df_substations[bool_voltages]
-    df_substations.loc[:, "split_count"] = df_substations["id"].apply(
-        lambda x: x.split("-")[1] if "-" in x else "0"
+    # One assignment, already integer: `.loc[:, col]` sets in place, so creating the column
+    # as strings and then casting it fails on a string dtype under pandas 3.
+    df_substations["split_count"] = (
+        df_substations["id"]
+        .apply(lambda x: x.split("-")[1] if "-" in x else "0")
+        .astype(int)
     )
-    df_substations.loc[:, "split_count"] = df_substations["split_count"].astype(int)
 
     bool_split = df_substations["split_elements"] > 1
     bool_frequency_len = (

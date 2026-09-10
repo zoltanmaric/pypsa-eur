@@ -893,6 +893,10 @@ def process_offshore_regions(
         offshore_locs = buses.loc[c_b & buses.substation_off, ["x", "y"]].rename_axis(
             "name"
         )
+        # A country can have an offshore shape but no offshore substation; the voronoi of an
+        # empty point set has no regions to dissolve.
+        if offshore_locs.empty:
+            continue
         offshore_regions_c = gpd.GeoDataFrame(
             {
                 "name": offshore_locs.index,
