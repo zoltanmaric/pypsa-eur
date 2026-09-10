@@ -10,6 +10,9 @@
 
 * Fix: focus_weights related TypeError during cluster_network ([#2277](https://github.com/PyPSA/pypsa-eur/pull/2277))
 
+* Fix: `build_osm_network` no longer fails with a length mismatch when a line is split into more
+  than 26 segments; the per-segment id suffixes now continue past `z` as `aa`, `ab`, ...
+
 ## PyPSA-Eur v2026.08.0 (19th August 2026)
 
 **Features**

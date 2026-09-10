@@ -235,6 +235,25 @@ def _split_linestring_by_point(linestring, points):
 
 
 # TODO: Last old function to improve, either vectorise or parallelise
+def _segment_suffixes(n: int) -> list[str]:
+    """
+    Spreadsheet-style suffixes for the segments a split line is cut into: a, b, ... z, aa, ab, ...
+
+    A bare 26-letter alphabet silently yields fewer suffixes than segments once a line crosses more
+    than 26 buses, which pandas then rejects as a length mismatch rather than a naming problem.
+    """
+    suffixes = []
+    for i in range(n):
+        suffix = ""
+        while True:
+            suffix = string.ascii_lowercase[i % 26] + suffix
+            i = i // 26 - 1
+            if i < 0:
+                break
+        suffixes.append(suffix)
+    return suffixes
+
+
 def split_overpassing_lines(lines, buses, distance_crs=DISTANCE_CRS, tol=1):
     """
     Split overpassing lines by splitting them at nodes within a given tolerance,
@@ -321,8 +340,8 @@ def split_overpassing_lines(lines, buses, distance_crs=DISTANCE_CRS, tol=1):
             voltage = parts[1] if len(parts) > 1 else ""  # e.g., "220"
 
             df_append["line_id"] = [
-                f"{base_id}:{letter}-{voltage}" if n_geoms > 1 else original_line_id
-                for letter in string.ascii_lowercase[:n_geoms]
+                f"{base_id}:{suffix}-{voltage}" if n_geoms > 1 else original_line_id
+                for suffix in _segment_suffixes(n_geoms)
             ]
 
             lines_to_add.append(df_append)
