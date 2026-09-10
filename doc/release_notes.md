@@ -10,6 +10,13 @@
   the `osm_name` column, so downstream consumers get a human-readable label instead of only an OSM object
   id. Substations aggregated from several OSM objects take the first non-empty name; substations without a
   name in OSM get an empty string.
+* Fix: `retrieve_osm_data` ignored the configured `overpass_api: max_tries` because a local
+  `max_tries = 3` shadowed the parameter. This matters more than it looks: when one feature
+  fails, Snakemake discards every already-retrieved file for that country, so a flaky
+  endpoint can lose four good responses to one bad one.
+
+* Fix: `retrieve_osm_data` raised `UnboundLocalError` from its own error handler when
+  `requests.post` failed before binding `response` (connection refused, DNS failure).
 
 * Fix: clustered regions keep their `country` column, and `build_powerplants` reads the country from it instead of from a bus-name prefix, so `clusters: all` assigns power plants to buses and builds the Ukraine/Moldova availability matrices ([#XXXX](https://github.com/PyPSA/pypsa-eur/pull/XXXX), closes [#2262](https://github.com/PyPSA/pypsa-eur/issues/2262)).
 * Fix: `add_electricity` no longer fails under pandas 3 when the plants kept disaggregated (`clustering: exclude_carriers`) have no plant name ([#XXXX](https://github.com/PyPSA/pypsa-eur/pull/XXXX)).

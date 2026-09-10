@@ -110,7 +110,6 @@ def retrieve_osm_data(
                 f"Invalid feature: {f}. Supported features: {list(features_dict.keys())}"
             )
 
-        max_tries = 3
         for attempt in range(max_tries):
             logger.info(
                 f" - Fetching OSM data for feature '{f}' in {country} (Attempt {attempt + 1})..."
@@ -126,6 +125,7 @@ def retrieve_osm_data(
                 );
                 out body geom;
             """
+            response = None
             try:
                 # Send the request
                 response = requests.post(url, data=op_query, headers=headers)
