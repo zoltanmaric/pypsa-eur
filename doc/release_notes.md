@@ -40,6 +40,7 @@
   the original voltage levels and the transformers between them. `set_line_s_max_pu` in
   [prepare_network][] now applies the N-1 security margin to transformers as well as lines, which only
   matters when transformers survive simplification.
+* Fix: `build_powerplants` no longer fails with `cannot reindex on an axis with duplicate labels` when a plant sits on a boundary two regions share, which joins it to both ([#XXXX](https://github.com/PyPSA/pypsa-eur/pull/XXXX)).
 
 * Fix: fix bugs in retrofitting scripts which happens due to pandas version change and other code changes ([#2273](https://github.com/PyPSA/pypsa-eur/pull/2273))
 
