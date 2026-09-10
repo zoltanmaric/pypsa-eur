@@ -172,3 +172,45 @@ def test_map_to_country_bus_uses_the_country_column():
     assert assigned.bus.tolist() == ["relation/1-380", "way/2-225", "way/2-225"]
     # the regions' country column must not leak into the plant table
     assert "country" not in assigned.columns
+
+
+def test_a_plant_on_a_shared_region_boundary_gets_one_bus():
+    # Two regions meeting at longitude 11: a plant exactly on the seam joins to both.
+    regions = gpd.GeoDataFrame(
+        {"country": ["DE", "DE"]},
+        index=pd.Index(["relation/1-380", "relation/2-220"], name="name"),
+        geometry=[box(10, 50, 11, 51), box(11, 50, 12, 51)],
+        crs=4326,
+    )
+    plants = gpd.GeoDataFrame(
+        {"Country": ["DE"]},
+        geometry=gpd.points_from_xy([11.0], [50.5]),
+        crs=4326,
+    )
+
+    assigned = map_to_country_bus(plants, regions)
+
+    # One row per plant, not one per region it touches.
+    assert len(assigned) == 1
+    assert assigned.index.is_unique
+    assert assigned.bus.iloc[0] in {"relation/1-380", "relation/2-220"}
+
+
+def test_a_plant_equidistant_from_two_regions_gets_one_bus():
+    # Outside both regions and exactly between them, so sjoin_nearest ties.
+    regions = gpd.GeoDataFrame(
+        {"country": ["DE", "DE"]},
+        index=pd.Index(["relation/1-380", "relation/2-220"], name="name"),
+        geometry=[box(10, 50, 11, 51), box(12, 50, 13, 51)],
+        crs=4326,
+    )
+    plants = gpd.GeoDataFrame(
+        {"Country": ["DE"]},
+        geometry=gpd.points_from_xy([11.5], [50.5]),
+        crs=4326,
+    )
+
+    assigned = map_to_country_bus(plants, regions)
+
+    assert len(assigned) == 1
+    assert assigned.index.is_unique

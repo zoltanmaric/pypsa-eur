@@ -160,6 +160,18 @@ def fill_unoccupied_holes(gdf: gpd.GeoDataFrame) -> gpd.GeoSeries:
     return result
 
 
+def _one_region_per_plant(joined):
+    """
+    Keep a single region per plant after a spatial join.
+
+    A plant sitting on a boundary two regions share joins to both, and a plant equidistant from
+    two regions gets both from ``sjoin_nearest``. Either way the result carries repeated index
+    labels, which ``reindex`` rejects outright. The regions meet at that boundary, so the choice
+    between them is arbitrary; taking the first keeps it deterministic.
+    """
+    return joined[~joined.index.duplicated(keep="first")]
+
+
 def map_to_country_bus(
     ppl: gpd.GeoDataFrame, regions: gpd.GeoDataFrame, max_distance: float = 10000
 ) -> gpd.GeoDataFrame:
@@ -178,8 +190,8 @@ def map_to_country_bus(
         joined = plants.sjoin(country_regions[["geometry"]]).rename(
             columns={"name": "bus"}
         )
-        # Drop duplicate matches (plant in overlapping onshore/offshore regions)
-        joined = joined[~joined.index.duplicated(keep="first")]
+        # Keep one assignment per plant when regions overlap.
+        joined = _one_region_per_plant(joined)
         joined = joined.reindex(plants.index)
         assigned.append(joined.dropna(subset=["bus"]))
         missing = joined[joined["bus"].isna()]
@@ -197,6 +209,7 @@ def map_to_country_bus(
                     max_distance=max_distance,
                 )
                 .rename(columns={"name": "bus"})
+                .pipe(_one_region_per_plant)
                 .to_crs(4326)
             )
             missing = plants.index.difference(nearest.index)
