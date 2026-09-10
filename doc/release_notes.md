@@ -6,6 +6,14 @@
 <!-- Upcoming Release -->
 <!-- ================= -->
 
+* Fix: `retrieve_osm_data` ignored the configured `overpass_api: max_tries` because a local
+  `max_tries = 3` shadowed the parameter. This matters more than it looks: when one feature
+  fails, Snakemake discards every already-retrieved file for that country, so a flaky
+  endpoint can lose four good responses to one bad one.
+
+* Fix: `retrieve_osm_data` raised `UnboundLocalError` from its own error handler when
+  `requests.post` failed before binding `response` (connection refused, DNS failure).
+
 * Fix: fix bugs in retrofitting scripts which happens due to pandas version change and other code changes ([#2273](https://github.com/PyPSA/pypsa-eur/pull/2273))
 
 * Fix: focus_weights related TypeError during cluster_network ([#2277](https://github.com/PyPSA/pypsa-eur/pull/2277))
