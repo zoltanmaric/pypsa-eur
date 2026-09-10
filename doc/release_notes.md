@@ -6,6 +6,19 @@
 <!-- Upcoming Release -->
 <!-- ================= -->
 
+* Fix: the OSM build path (`data: osm: source: build`) could not run under pandas 3.
+  `astype(str)` on an Arrow-backed column keeps `pd.NA` rather than the literal `"nan"`
+  the cleaning chains strip, so `re.sub` received a non-string; and `split_count` was
+  created as strings then cast to int through `.loc[:, col]`, which sets in place and
+  refuses the dtype change.
+
+* Fix: `split_overpassing_lines` raised `IndexError` on a closed line. A ring has an empty
+  boundary, so it has no endpoints to exclude and cannot be split against them.
+
+* Fix: `process_offshore_regions` raised `KeyError: 'name'` for a country with an offshore
+  shape but no offshore substation — the voronoi of an empty point set has no regions to
+  dissolve.
+
 * Add: carry the OpenStreetMap substation name through the OSM processing pipeline into `buses.csv` as
   the `osm_name` column, so downstream consumers get a human-readable label instead of only an OSM object
   id. Substations aggregated from several OSM objects take the first non-empty name; substations without a
