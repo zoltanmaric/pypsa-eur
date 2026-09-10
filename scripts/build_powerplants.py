@@ -160,12 +160,26 @@ def fill_unoccupied_holes(gdf: gpd.GeoDataFrame) -> gpd.GeoSeries:
     return result
 
 
+def _one_region_per_plant(joined):
+    """
+    Keep a single region per plant after a spatial join.
+
+    A plant sitting on a boundary two regions share joins to both, and a plant equidistant from
+    two regions gets both from ``sjoin_nearest``. Either way the result carries repeated index
+    labels, which ``reindex`` rejects outright. The regions meet at that boundary, so the choice
+    between them is arbitrary; taking the first keeps it deterministic.
+    """
+    return joined[~joined.index.duplicated(keep="first")]
+
+
 def map_to_country_bus(
     ppl: gpd.GeoDataFrame, regions: gpd.GeoDataFrame, max_distance: float = 10000
 ) -> gpd.GeoDataFrame:
     """
     Assign power plants to region buses of the same country.
 
+    Regions carry their country in the ``country`` column (bus names are not
+    guaranteed to start with a country code, e.g. with ``clusters: all``).
     First, spatial join is performed per country to avoid cross-border
     misassignment. Remaining unmatched plants are assigned via nearest
     neighbor (max 10000m) within the same country.
@@ -174,10 +188,11 @@ def map_to_country_bus(
     unmatched = []
 
     for country, plants in ppl.groupby("Country"):
-        country_regions = regions[regions.index.str[:2] == country]
+        country_regions = regions.loc[regions["country"] == country, ["geometry"]]
         joined = (
             plants.sjoin(country_regions)
             .rename(columns={"name": "bus"})
+            .pipe(_one_region_per_plant)
             .reindex(plants.index)
         )
         assigned.append(joined.dropna(subset=["bus"]))
@@ -188,15 +203,15 @@ def map_to_country_bus(
     if unmatched:
         unmatched = pd.concat(unmatched)
         for country, plants in unmatched.groupby("Country"):
-            country_regions = regions[regions.index.str[:2] == country]
+            country_regions = regions.loc[regions["country"] == country, ["geometry"]]
             nearest = (
                 plants.to_crs(3035)
                 .sjoin_nearest(country_regions.to_crs(3035), max_distance=max_distance)
                 .rename(columns={"name": "bus"})
+                .pipe(_one_region_per_plant)
                 .to_crs(4326)
             )
             missing = plants.index.difference(nearest.index)
-            print(country, missing)
             nearest = pd.concat([nearest, plants.loc[missing]])
             assigned.append(nearest)
 
