@@ -6,6 +6,8 @@
 <!-- Upcoming Release -->
 <!-- ================= -->
 
+* Fix: `build_renewable_profiles` no longer fails for offshore wind when an offshore region belongs to a substation without an onshore region (e.g. with `clusters: all`); the onshore area serves as its shoreline-distance proxy ([#XXXX](https://github.com/PyPSA/pypsa-eur/pull/XXXX), see [#2192](https://github.com/PyPSA/pypsa-eur/issues/2192)).
+
 * Fix: fix bugs in retrofitting scripts which happens due to pandas version change and other code changes ([#2273](https://github.com/PyPSA/pypsa-eur/pull/2273))
 
 * Fix: focus_weights related TypeError during cluster_network ([#2277](https://github.com/PyPSA/pypsa-eur/pull/2277))
