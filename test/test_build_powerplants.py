@@ -197,20 +197,22 @@ def test_a_plant_on_a_shared_region_boundary_gets_one_bus():
 
 
 def test_a_plant_equidistant_from_two_regions_gets_one_bus():
-    # Outside both regions and exactly between them, so sjoin_nearest ties.
+    # Coincident regions give an exact nearest tie within the 10 km cutoff.
     regions = gpd.GeoDataFrame(
         {"country": ["DE", "DE"]},
         index=pd.Index(["relation/1-380", "relation/2-220"], name="name"),
-        geometry=[box(10, 50, 11, 51), box(12, 50, 13, 51)],
+        geometry=[box(10, 50, 11, 51), box(10, 50, 11, 51)],
         crs=4326,
     )
     plants = gpd.GeoDataFrame(
         {"Country": ["DE"]},
-        geometry=gpd.points_from_xy([11.5], [50.5]),
+        geometry=gpd.points_from_xy([11.01], [50.5]),
         crs=4326,
     )
+    assert len(plants.to_crs(3035).sjoin_nearest(regions.to_crs(3035), max_distance=10000)) == 2
 
     assigned = map_to_country_bus(plants, regions)
 
     assert len(assigned) == 1
     assert assigned.index.is_unique
+    assert assigned.iloc[0]["bus"] in regions.index

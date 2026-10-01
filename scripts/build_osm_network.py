@@ -763,6 +763,12 @@ def _merge_buses_to_stations(
     buses_all = gpd.sjoin(buses_all, stations_all, how="left", predicate="within")
 
     # TODO: For now also include DC buses in the merging process. In the future, try to keep original HVDC converter location within substation
+    if "name" in buses_all:
+        # Spatially merged OSM objects can supply a name missing from the first bus.
+        names = buses_all["name"].fillna("").astype(str).str.strip().replace("", pd.NA)
+        buses_all["name"] = names.groupby(
+            [buses_all["station_id"], buses_all["voltage"]], dropna=False
+        ).transform("first").fillna("")
     buses_all = buses_all.drop_duplicates(subset=["station_id", "voltage"])
 
     # Offsetting geometries within same substations for each voltage level

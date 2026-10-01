@@ -20,6 +20,7 @@ sys.path.append("./scripts")
 from scripts.build_osm_network import (
     BUSES_COLUMNS,
     _finalise_network,
+    _merge_buses_to_stations,
 )
 from scripts.clean_osm_data import _aggregate_substations, _finalise_substations
 
@@ -172,3 +173,26 @@ def test_osm_name_empty_when_source_column_missing():
     )
 
     assert buses.loc["way/3-380", "osm_name"] == ""
+
+
+def test_station_merge_keeps_the_first_non_empty_osm_name():
+    buses = gpd.GeoDataFrame(
+        {
+            "bus_id": ["way/1", "way/2", "way/3"],
+            "name": [" ", "Altbach", "Another name"],
+            "voltage": [380000] * 3,
+            "geometry": [Point(0.5, 0.5)] * 3,
+        }, crs=4326,
+    )
+    stations = gpd.GeoDataFrame(
+        {
+            "station_id": ["station/1"],
+            "poi": [Point(0.5, 0.5)],
+            "geometry": [Polygon([(0, 0), (0, 1), (1, 1), (1, 0)])],
+        }, crs=4326,
+    )
+
+    merged = _merge_buses_to_stations(buses, stations)
+
+    assert len(merged) == 1
+    assert merged.iloc[0]["name"] == "Altbach"

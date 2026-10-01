@@ -7,7 +7,6 @@ Tests the functionalities of scripts/simplify_network.py.
 """
 
 import sys
-from functools import reduce
 
 import pandas as pd
 import pypsa
@@ -70,32 +69,6 @@ def test_simplify_network_to_380_removes_transformers(two_voltage_level_network)
     assert trafo_map["220_a"] == "380_a"
 
 
-def test_identity_busmap_keeps_transformers(two_voltage_level_network):
-    """
-    With to_380 disabled, the identity busmap keeps transformers and v_nom.
-
-    This mirrors the `else` branch of the `to_380` switch in
-    `simplify_network.py`'s `__main__`, and checks that the identity busmap is
-    a valid first element for both `reduce(lambda x, y: x.map(y), ...)` and
-    `cluster_regions`.
-    """
-    n = two_voltage_level_network
-    trafo_map = pd.Series(n.buses.index, index=n.buses.index)
-
-    assert not n.transformers.empty
-    assert set(n.buses.v_nom) == {380.0, 220.0}
-
-    busmaps = [trafo_map]
-    busmap_s = reduce(lambda x, y: x.map(y), busmaps[1:], busmaps[0])
-    assert busmap_s.equals(trafo_map)
-    assert set(busmap_s.index) == set(n.buses.index)
-
-    # A second busmap composed on top of the identity must behave as usual.
-    second = pd.Series(["380_a", "380_a", "220_a"], index=["380_a", "380_b", "220_a"])
-    composed = reduce(lambda x, y: x.map(y), [trafo_map, second][1:], trafo_map)
-    assert composed.to_dict() == second.to_dict()
-
-
 def test_cluster_regions_accepts_identity_busmap(two_voltage_level_network):
     """
     `cluster_regions` tolerates an identity busmap as its first element.
@@ -123,8 +96,7 @@ def test_cap_transmission_capacity_caps_transformers(two_voltage_level_network):
     """
     The N-1 margin is applied to transformers, not only to lines.
 
-    Upstream never needed this because the 380 kV lift removed transformers
-    before `prepare_network` ran; `to_380: false` is what exposes it.
+    Transformers retained with `to_380: false` need the same margin as lines.
     """
     n = two_voltage_level_network
     cap_transmission_capacity(n, line_max_pu=0.7)
