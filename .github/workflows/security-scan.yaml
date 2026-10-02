@@ -5,7 +5,6 @@ on:
     paths: [pixi.lock]
   # No path filter, a required check must report on every PR
   pull_request:
-    branches: [master]
   schedule:
   - cron: "0 6 * * *"
   workflow_dispatch:
@@ -16,26 +15,25 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     outputs:
-      pixi: ${{ steps.diff.outputs.pixi }}
+      scan: ${{ steps.diff.outputs.scan }}
     steps:
     - id: diff
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
         files=$(gh api "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" --paginate --jq '.[].filename')
-        grep -qxF pixi.lock <<< "$files" && pixi=true || pixi=false
-        echo "pixi=$pixi" >> "$GITHUB_OUTPUT"
+        grep -Eq '^(pixi[.]lock|[.]github/workflows/security-scan[.]yaml)$' <<< "$files" && scan=true || scan=false
+        echo "scan=$scan" >> "$GITHUB_OUTPUT"
 
   scan:
     name: SBOM and vulnerability scan
     needs: changes
-    # Skip only when pixi.lock is confirmed unchanged
-    if: ${{ !cancelled() && !(needs.changes.result == 'success' && needs.changes.outputs.pixi == 'false') }}
+    # Scan dependency and scanner changes; unchanged dependencies need no PR scan.
+    if: ${{ !cancelled() && !(needs.changes.result == 'success' && needs.changes.outputs.scan == 'false') }}
     runs-on: ubuntu-latest
     permissions:
       security-events: write
       contents: write   # required by anchore/sbom-action dependency-snapshot upload
-      actions: read     # required by dawidd6/action-download-artifact on fork PRs
     defaults:
       run:
         shell: bash -l {0}
@@ -81,7 +79,7 @@ jobs:
         sarif_file: ${{ steps.scan.outputs.sarif }}
         category: pixi-vuln-scan
 
-    # Baseline for the PR CVE diff. PR runs rescan it with their own vuln DB.
+    # Retain master SBOMs for audit; PR comparisons build their own exact-base SBOM.
     - name: Upload SBOM as artifact
       if: github.ref == 'refs/heads/master'
       uses: actions/upload-artifact@v7
@@ -90,23 +88,34 @@ jobs:
         path: sbom.spdx.json
         retention-days: 30
 
-    # All PRs gate on new CVEs vs the master baseline
-    - name: Download master baseline
+    # Use the event's exact base, not an artifact from a different branch or commit.
+    - name: Check out PR baseline
       if: github.event_name == 'pull_request'
-      uses: dawidd6/action-download-artifact@v25
+      uses: actions/checkout@v7
       with:
-        workflow: security-scan.yaml
-        name: master-sbom
-        branch: master
-        if_no_artifact_found: fail
-        path: master-baseline
+        ref: ${{ github.event.pull_request.base.sha }}
+        path: .security-baseline
+        persist-credentials: false
 
-    - name: Scan master baseline
+    - name: Install PR baseline
+      if: github.event_name == 'pull_request'
+      run: pixi install --manifest-path .security-baseline/pixi.toml --locked
+
+    - name: Generate PR baseline SBOM
+      if: github.event_name == 'pull_request'
+      uses: anchore/sbom-action@v0.24.2
+      with:
+        path: .security-baseline/.pixi/envs/default
+        output-file: base-sbom.spdx.json
+        dependency-snapshot: false
+        upload-artifact: false
+
+    - name: Scan PR baseline
       id: baseline
       if: github.event_name == 'pull_request'
       uses: anchore/scan-action@v7.4.2
       env:
-        SBOM: master-baseline/sbom.spdx.json
+        SBOM: base-sbom.spdx.json
       with: *scan_settings
 
     - name: Fail on new CVEs
@@ -120,8 +129,8 @@ jobs:
         ids() { jq -r '.runs[].results[] | select(.level == "error") | .ruleId' "$1" | sort -u; }
         new=$(comm -23 <(ids "$PR_SARIF") <(ids "$BASE_SARIF"))
         if [ -n "$new" ]; then
-          echo "::error::New high+ CVEs vs master:"
+          echo "::error::New high+ CVEs vs PR base:"
           printf '%s\n' "$new"
           exit 1
         fi
-        echo "No new high+ CVEs vs master."
+        echo "No new high+ CVEs vs PR base."
