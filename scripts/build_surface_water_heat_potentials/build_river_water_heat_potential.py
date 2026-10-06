@@ -389,7 +389,10 @@ if __name__ == "__main__":
     results = []
     for i, region_name in enumerate(onshore_regions.index, 1):
         # Extract region geometry and create a copy to avoid modification conflicts
-        region = gpd.GeoSeries(onshore_regions.loc[region_name].copy(deep=True))
+        region = gpd.GeoSeries(
+            onshore_regions.loc[region_name, ["geometry"]].copy(deep=True),
+            crs=onshore_regions.crs,
+        )
 
         # Process region with multi-threaded Dask operations
         result = get_regional_result(

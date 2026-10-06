@@ -252,7 +252,10 @@ if __name__ == "__main__":
         logging.info(f"Processing region {region_name}")
 
         # Extract region geometry and create a copy to avoid modification conflicts
-        region = gpd.GeoSeries(onshore_regions.loc[region_name].copy(deep=True))
+        region = gpd.GeoSeries(
+            onshore_regions.loc[region_name, ["geometry"]].copy(deep=True),
+            crs=onshore_regions.crs,
+        )
 
         # Submit region processing task to Dask cluster
         # Each task will:
