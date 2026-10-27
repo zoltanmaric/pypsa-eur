@@ -15,6 +15,7 @@ env:
 
 jobs:
   push-image:
+    if: github.repository == 'PyPSA/pypsa-eur'
     name: dev-env
     runs-on: ubuntu-latest
     steps:
